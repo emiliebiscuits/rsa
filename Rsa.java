@@ -7,7 +7,7 @@ package rsa;
 
 import java.math.BigInteger;
 import java.util.Random;
-
+import java.util.Date;
 /**
  *
  * @author Emilie
@@ -67,20 +67,34 @@ public class Rsa {
     public BigInteger getD() {
         return d;
     }
+    public BigInteger dechiffreRsa_chinois(BigInteger c)
+    {
+        BigInteger dp = d.mod(p.subtract(BigInteger.ONE));
+        BigInteger dq = d.mod(q.subtract(BigInteger.ONE));
+        BigInteger qInv = q.modInverse(p);
+        BigInteger sp = c.modPow(dp, p);
+        BigInteger sq = c.modPow(dq, q);
+        BigInteger h = qInv.multiply(sp.subtract(sq)).mod(p);
+        return sq.add(h.multiply(q));
+    }
     
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Rsa r = new Rsa(30);
+        Rsa r = new Rsa(2048);
         System.out.println("cle public : ( "+r.getN()+", "+r.getE()+" )");
         System.out.println("cle privee : ( "+r.getD()+", "+r.getP()+", "+r.getQ()+" )");
-        BigInteger m = new BigInteger("123");
+        BigInteger m = new BigInteger("12345");
         BigInteger c = m.modPow(r.getE(), r.getN());
         System.out.println("message : "+m);
         System.out.println("chiffré : "+c);
+        System.out.println("debut : "+ System.currentTimeMillis());
         BigInteger dc = c.modPow(r.getD(), r.getN());
         System.out.println("dechiffré : "+dc);
+        System.out.println("fin method 1 : "+ System.currentTimeMillis());
+        System.out.println("dechiffré (chinois): "+r.dechiffreRsa_chinois(c));
+        System.out.println("fin method 2 : "+ System.currentTimeMillis());
     }
     
 }
