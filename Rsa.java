@@ -7,6 +7,7 @@ package rsa;
 
 import java.math.BigInteger;
 import java.util.Random;
+
 /**
  *
  * @author Emilie
@@ -68,13 +69,16 @@ public class Rsa {
     }
     public BigInteger dechiffreRsa_chinois(BigInteger c)
     {
-        BigInteger dp = d.mod(p.subtract(BigInteger.ONE));
-        BigInteger dq = d.mod(q.subtract(BigInteger.ONE));
-        BigInteger qInv = q.modInverse(p);
-        BigInteger sp = c.modPow(dp, p);
-        BigInteger sq = c.modPow(dq, q);
-        BigInteger h = qInv.multiply(sp.subtract(sq)).mod(p);
-        return sq.add(h.multiply(q));
+        BigInteger d_mod_phip = d.mod(p.subtract(BigInteger.ONE));
+        BigInteger d_mod_phiq = d.mod(q.subtract(BigInteger.ONE));
+        BigInteger c_puis_d_mod_phip = c.modPow(d_mod_phip, n);
+        BigInteger c_puis_d_mod_phiq = c.modPow(d_mod_phiq, n);
+        BigInteger q_invp = q.modInverse(p);
+        BigInteger p_invq = p.modInverse(q);
+        BigInteger res1 = c_puis_d_mod_phip.multiply(q).multiply(q_invp);
+        BigInteger res2 = c_puis_d_mod_phiq.multiply(p).multiply(p_invq);
+        BigInteger res = res1.add(res2).mod(n);
+        return res;
     }
     
     /**
@@ -97,3 +101,5 @@ public class Rsa {
     }
     
 }
+
+   
